@@ -1,117 +1,249 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ALI SUMMER OS</title>
 
-const weeks = Array.from({ length: 12 }, (_, i) => ({
-  week: i + 1,
-  title: `Week ${i + 1}`,
-  focus: i < 4
-    ? "Foundation Phase"
-    : i < 8
-    ? "Build Phase"
-    : "Project Phase",
-}));
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #000, #111, #000);
+    color: white;
+  }
 
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+  }
 
-export default function SummerOS() {
-  const [selectedWeek, setSelectedWeek] = useState(1);
-  const [completed, setCompleted] = useState({});
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+  }
 
-  const toggleTask = (key) => {
-    setCompleted((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  .sub {
+    color: #aaa;
+  }
 
-  return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-3xl font-bold mb-2">⚡ ALI SUMMER OS</h1>
-      <p className="text-gray-400 mb-6">
-        12-Week Interactive Summer System (Cyber + Engineering + Life)
-      </p>
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #222;
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+  }
 
-      {/* Week Selector */}
-      <div className="grid grid-cols-6 md:grid-cols-12 gap-2 mb-6">
-        {weeks.map((w) => (
-          <button
-            key={w.week}
-            onClick={() => setSelectedWeek(w.week)}
-            className={`p-2 rounded-xl border text-sm ${
-              selectedWeek === w.week
-                ? "bg-white text-black"
-                : "bg-gray-900 border-gray-700"
-            }`}
-          >
-            W{w.week}
-          </button>
-        ))}
-      </div>
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #22d3ee, #a855f7);
+    transition: width 0.3s ease;
+  }
 
-      {/* Week Info */}
-      <div className="bg-gray-900 rounded-2xl p-4 mb-6 border border-gray-800">
-        <h2 className="text-xl font-semibold">
-          {weeks[selectedWeek - 1].title}
-        </h2>
-        <p className="text-gray-400">
-          Focus: {weeks[selectedWeek - 1].focus}
-        </p>
-      </div>
+  .weeks {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
 
-      {/* Daily Plan */}
-      <div className="grid md:grid-cols-7 gap-3">
-        {days.map((day) => (
-          <div
-            key={day}
-            className="bg-gray-900 p-3 rounded-xl border border-gray-800"
-          >
-            <h3 className="font-bold mb-2">{day}</h3>
+  .week-btn {
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #111;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.2s;
+  }
 
-            <div className="space-y-2 text-sm">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={!!completed[`${selectedWeek}-${day}-study`]}
-                  onChange={() =>
-                    toggleTask(`${selectedWeek}-${day}-study`)
-                  }
-                />
-                Study Block
-              </label>
+  .week-btn.active {
+    background: white;
+    color: black;
+  }
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={!!completed[`${selectedWeek}-${day}-cyber`]}
-                  onChange={() => toggleTask(`${selectedWeek}-${day}-cyber`)}
-                />
-                Cyber / Coding
-              </label>
+  .card {
+    background: rgba(20,20,20,0.7);
+    border: 1px solid #222;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+  }
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={!!completed[`${selectedWeek}-${day}-reading`]}
-                  onChange={() =>
-                    toggleTask(`${selectedWeek}-${day}-reading`)
-                  }
-                />
-                Reading
-              </label>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={!!completed[`${selectedWeek}-${day}-quran`]}
-                  onChange={() => toggleTask(`${selectedWeek}-${day}-quran`)}
-                />
-                Quran
-              </label>
-            </div>
-          </div>
-        ))}
-      </div>
+  .day {
+    background: #111;
+    border: 1px solid #222;
+    padding: 10px;
+    border-radius: 12px;
+    transition: transform 0.2s;
+  }
 
-      {/* Footer */}
-      <div className="mt-8 text-center text-gray-500 text-sm">
-        Built for Ali ⚡ | 12-Week Summer Control System
-      </div>
-    </div>
-  );
+  .day:hover {
+    transform: scale(1.02);
+  }
+
+  .day h3 {
+    color: #22d3ee;
+    margin-top: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    margin: 4px 0;
+    cursor: pointer;
+  }
+
+  footer {
+    text-align: center;
+    color: #666;
+    margin-top: 40px;
+    font-size: 12px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>⚡ ALI SUMMER OS</h1>
+  <div class="sub">Cyber • Engineering • Language • Athlete System</div>
+
+  <div class="progress-bar">
+    <div id="progress" class="progress"></div>
+  </div>
+  <p id="progressText">Progress: 0%</p>
+
+  <div class="weeks" id="weeks"></div>
+
+  <div class="card">
+    <h2 id="phase"></h2>
+    <p id="focus"></p>
+  </div>
+
+  <div class="grid" id="days"></div>
+
+  <footer>
+    Built as a custom operating system for Ali ⚡ | Summer Control Hub
+  </footer>
+
+</div>
+
+<script>
+const weeks = [
+  { week: 1, phase: "Month 1 — Foundation", focus: "Algebra + Quran + C++ Syntax" },
+  { week: 2, phase: "Month 1 — Foundation", focus: "Algebra Drills + Cyber Ch.2 + German" },
+  { week: 3, phase: "Month 1 — Foundation", focus: "Math Review + C++ Conditionals + Book 1" },
+  { week: 4, phase: "Month 1 — Foundation", focus: "Math Test + Cyber Ch.4 + Electrical Intro" },
+
+  { week: 5, phase: "Month 2 — Go Deeper", focus: "Physics Ch.1 + C++ Functions + Mechatronics" },
+  { week: 6, phase: "Month 2 — Go Deeper", focus: "Electric Currents + Cyber Mid + Practice" },
+  { week: 7, phase: "Month 2 — Go Deeper", focus: "Physics Problems + C++ OOP + Spanish" },
+  { week: 8, phase: "Month 2 — Go Deeper", focus: "Physics Review + Mechatronics + Languages" },
+
+  { week: 9, phase: "Month 3 — Finish Strong", focus: "Data Analysis + Cyber Final + Engineering Project" },
+  { week: 10, phase: "Month 3 — Finish Strong", focus: "Physics Review + Cyber CTF" },
+  { week: 11, phase: "Month 3 — Finish Strong", focus: "Engineering Project + Full Review" },
+  { week: 12, phase: "Month 3 — Finish Strong", focus: "Final Reviews + Celebration" },
+];
+
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const tasks = ["Study","Cyber / Coding","Reading","Quran","Language"];
+
+let selectedWeek = 1;
+let completed = JSON.parse(localStorage.getItem("progress")) || {};
+
+function save() {
+  localStorage.setItem("progress", JSON.stringify(completed));
 }
+
+function updateProgress() {
+  const total = Object.keys(completed).length;
+  const done = Object.values(completed).filter(Boolean).length;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  document.getElementById("progress").style.width = percent + "%";
+  document.getElementById("progressText").innerText = "Progress: " + percent + "%";
+}
+
+function renderWeeks() {
+  const container = document.getElementById("weeks");
+  container.innerHTML = "";
+
+  weeks.forEach(w => {
+    const btn = document.createElement("button");
+    btn.className = "week-btn" + (w.week === selectedWeek ? " active" : "");
+    btn.innerText = "W" + w.week;
+
+    btn.onclick = () => {
+      selectedWeek = w.week;
+      render();
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+function renderWeekInfo() {
+  document.getElementById("phase").innerText = weeks[selectedWeek-1].phase;
+  document.getElementById("focus").innerText = weeks[selectedWeek-1].focus;
+}
+
+function toggle(key) {
+  completed[key] = !completed[key];
+  save();
+  updateProgress();
+}
+
+function renderDays() {
+  const container = document.getElementById("days");
+  container.innerHTML = "";
+
+  days.forEach(day => {
+    const div = document.createElement("div");
+    div.className = "day";
+
+    let html = `<h3>${day}</h3>`;
+
+    tasks.forEach(task => {
+      const key = `${selectedWeek}-${day}-${task}`;
+
+      html += `
+        <label>
+          <input type="checkbox"
+          ${completed[key] ? "checked" : ""}
+          onchange="toggle('${key}')">
+          ${task}
+        </label>
+      `;
+    });
+
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+}
+
+function render() {
+  renderWeeks();
+  renderWeekInfo();
+  renderDays();
+  updateProgress();
+}
+
+render();
+</script>
+
+</body>
+</html>
