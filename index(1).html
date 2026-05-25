@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ALI SUMMER OS</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #000, #111, #000);
+    color: white;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+  }
+
+  .sub {
+    color: #aaa;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #222;
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+  }
+
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #22d3ee, #a855f7);
+    transition: width 0.3s ease;
+  }
+
+  .weeks {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .week-btn {
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #111;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.2s;
+  }
+
+  .week-btn.active {
+    background: white;
+    color: black;
+  }
+
+  .card {
+    background: rgba(20,20,20,0.7);
+    border: 1px solid #222;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  .day {
+    background: #111;
+    border: 1px solid #222;
+    padding: 10px;
+    border-radius: 12px;
+    transition: transform 0.2s;
+  }
+
+  .day:hover {
+    transform: scale(1.02);
+  }
+
+  .day h3 {
+    color: #22d3ee;
+    margin-top: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    margin: 4px 0;
+    cursor: pointer;
+  }
+
+  footer {
+    text-align: center;
+    color: #666;
+    margin-top: 40px;
+    font-size: 12px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>⚡ ALI SUMMER OS</h1>
+  <div class="sub">Cyber • Engineering • Language • Athlete System</div>
+
+  <div class="progress-bar">
+    <div id="progress" class="progress"></div>
+  </div>
+  <p id="progressText">Progress: 0%</p>
+
+  <div class="weeks" id="weeks"></div>
+
+  <div class="card">
+    <h2 id="phase"></h2>
+    <p id="focus"></p>
+  </div>
+
+  <div class="grid" id="days"></div>
+
+  <footer>
+    Built as a custom operating system for Ali ⚡ | Summer Control Hub
+  </footer>
+
+</div>
+
+<script>
+const weeks = [
+  { week: 1, phase: "Month 1 — Foundation", focus: "Algebra + Quran + C++ Syntax" },
+  { week: 2, phase: "Month 1 — Foundation", focus: "Algebra Drills + Cyber Ch.2 + German" },
+  { week: 3, phase: "Month 1 — Foundation", focus: "Math Review + C++ Conditionals + Book 1" },
+  { week: 4, phase: "Month 1 — Foundation", focus: "Math Test + Cyber Ch.4 + Electrical Intro" },
+
+  { week: 5, phase: "Month 2 — Go Deeper", focus: "Physics Ch.1 + C++ Functions + Mechatronics" },
+  { week: 6, phase: "Month 2 — Go Deeper", focus: "Electric Currents + Cyber Mid + Practice" },
+  { week: 7, phase: "Month 2 — Go Deeper", focus: "Physics Problems + C++ OOP + Spanish" },
+  { week: 8, phase: "Month 2 — Go Deeper", focus: "Physics Review + Mechatronics + Languages" },
+
+  { week: 9, phase: "Month 3 — Finish Strong", focus: "Data Analysis + Cyber Final + Engineering Project" },
+  { week: 10, phase: "Month 3 — Finish Strong", focus: "Physics Review + Cyber CTF" },
+  { week: 11, phase: "Month 3 — Finish Strong", focus: "Engineering Project + Full Review" },
+  { week: 12, phase: "Month 3 — Finish Strong", focus: "Final Reviews + Celebration" },
+];
+
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const tasks = ["Study","Cyber / Coding","Reading","Quran","Language"];
+
+let selectedWeek = 1;
+let completed = JSON.parse(localStorage.getItem("progress")) || {};
+
+function save() {
+  localStorage.setItem("progress", JSON.stringify(completed));
+}
+
+function updateProgress() {
+  const total = Object.keys(completed).length;
+  const done = Object.values(completed).filter(Boolean).length;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  document.getElementById("progress").style.width = percent + "%";
+  document.getElementById("progressText").innerText = "Progress: " + percent + "%";
+}
+
+function renderWeeks() {
+  const container = document.getElementById("weeks");
+  container.innerHTML = "";
+
+  weeks.forEach(w => {
+    const btn = document.createElement("button");
+    btn.className = "week-btn" + (w.week === selectedWeek ? " active" : "");
+    btn.innerText = "W" + w.week;
+
+    btn.onclick = () => {
+      selectedWeek = w.week;
+      render();
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+function renderWeekInfo() {
+  document.getElementById("phase").innerText = weeks[selectedWeek-1].phase;
+  document.getElementById("focus").innerText = weeks[selectedWeek-1].focus;
+}
+
+function toggle(key) {
+  completed[key] = !completed[key];
+  save();
+  updateProgress();
+}
+
+function renderDays() {
+  const container = document.getElementById("days");
+  container.innerHTML = "";
+
+  days.forEach(day => {
+    const div = document.createElement("div");
+    div.className = "day";
+
+    let html = `<h3>${day}</h3>`;
+
+    tasks.forEach(task => {
+      const key = `${selectedWeek}-${day}-${task}`;
+
+      html += `
+        <label>
+          <input type="checkbox"
+          ${completed[key] ? "checked" : ""}
+          onchange="toggle('${key}')">
+          ${task}
+        </label>
+      `;
+    });
+
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+}
+
+function render() {
+  renderWeeks();
+  renderWeekInfo();
+  renderDays();
+  updateProgress();
+}
+
+render();
+</script>
+
+</body>
+</html>
