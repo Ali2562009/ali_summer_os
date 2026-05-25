@@ -1,0 +1,117 @@
+import { useState } from "react";
+
+const weeks = Array.from({ length: 12 }, (_, i) => ({
+  week: i + 1,
+  title: `Week ${i + 1}`,
+  focus: i < 4
+    ? "Foundation Phase"
+    : i < 8
+    ? "Build Phase"
+    : "Project Phase",
+}));
+
+const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+export default function SummerOS() {
+  const [selectedWeek, setSelectedWeek] = useState(1);
+  const [completed, setCompleted] = useState({});
+
+  const toggleTask = (key) => {
+    setCompleted((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold mb-2">⚡ ALI SUMMER OS</h1>
+      <p className="text-gray-400 mb-6">
+        12-Week Interactive Summer System (Cyber + Engineering + Life)
+      </p>
+
+      {/* Week Selector */}
+      <div className="grid grid-cols-6 md:grid-cols-12 gap-2 mb-6">
+        {weeks.map((w) => (
+          <button
+            key={w.week}
+            onClick={() => setSelectedWeek(w.week)}
+            className={`p-2 rounded-xl border text-sm ${
+              selectedWeek === w.week
+                ? "bg-white text-black"
+                : "bg-gray-900 border-gray-700"
+            }`}
+          >
+            W{w.week}
+          </button>
+        ))}
+      </div>
+
+      {/* Week Info */}
+      <div className="bg-gray-900 rounded-2xl p-4 mb-6 border border-gray-800">
+        <h2 className="text-xl font-semibold">
+          {weeks[selectedWeek - 1].title}
+        </h2>
+        <p className="text-gray-400">
+          Focus: {weeks[selectedWeek - 1].focus}
+        </p>
+      </div>
+
+      {/* Daily Plan */}
+      <div className="grid md:grid-cols-7 gap-3">
+        {days.map((day) => (
+          <div
+            key={day}
+            className="bg-gray-900 p-3 rounded-xl border border-gray-800"
+          >
+            <h3 className="font-bold mb-2">{day}</h3>
+
+            <div className="space-y-2 text-sm">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={!!completed[`${selectedWeek}-${day}-study`]}
+                  onChange={() =>
+                    toggleTask(`${selectedWeek}-${day}-study`)
+                  }
+                />
+                Study Block
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={!!completed[`${selectedWeek}-${day}-cyber`]}
+                  onChange={() => toggleTask(`${selectedWeek}-${day}-cyber`)}
+                />
+                Cyber / Coding
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={!!completed[`${selectedWeek}-${day}-reading`]}
+                  onChange={() =>
+                    toggleTask(`${selectedWeek}-${day}-reading`)
+                  }
+                />
+                Reading
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={!!completed[`${selectedWeek}-${day}-quran`]}
+                  onChange={() => toggleTask(`${selectedWeek}-${day}-quran`)}
+                />
+                Quran
+              </label>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div className="mt-8 text-center text-gray-500 text-sm">
+        Built for Ali ⚡ | 12-Week Summer Control System
+      </div>
+    </div>
+  );
+}
